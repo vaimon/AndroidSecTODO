@@ -50,8 +50,8 @@ fun LoginScreen(
 
     BasicButton(AppText.sign_in, Modifier.basicButton()) { viewModel.onSignInClick(openAndPopUp) }
 
-    BasicTextButton(AppText.forgot_password, Modifier.textButton()) {
-      viewModel.onForgotPasswordClick()
+    BasicTextButton(AppText.sign_up, Modifier.textButton()) {
+      viewModel.onSignUpClick(openAndPopUp)
     }
   }
 }

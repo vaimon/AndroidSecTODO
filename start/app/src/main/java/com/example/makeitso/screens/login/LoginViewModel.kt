@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.R.string as AppText
 import com.example.makeitso.SETTINGS_SCREEN
+import com.example.makeitso.SIGN_UP_SCREEN
+import com.example.makeitso.TASKS_SCREEN
 import com.example.makeitso.common.ext.isValidEmail
 import com.example.makeitso.common.snackbar.SnackbarManager
 import com.example.makeitso.model.service.AccountService
@@ -62,19 +64,11 @@ class LoginViewModel @Inject constructor(
 
     launchCatching {
       accountService.authenticate(email, password)
-      openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+      openAndPopUp(TASKS_SCREEN, LOGIN_SCREEN)
     }
   }
 
-  fun onForgotPasswordClick() {
-    if (!email.isValidEmail()) {
-      SnackbarManager.showMessage(AppText.email_error)
-      return
-    }
-
-    launchCatching {
-      accountService.sendRecoveryEmail(email)
-      SnackbarManager.showMessage(AppText.recovery_email_sent)
-    }
+  fun onSignUpClick(openAndPopUp: (String, String) -> Unit){
+    openAndPopUp(SIGN_UP_SCREEN, LOGIN_SCREEN)
   }
 }

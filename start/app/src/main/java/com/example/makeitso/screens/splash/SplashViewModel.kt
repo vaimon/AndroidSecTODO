@@ -17,6 +17,7 @@ limitations under the License.
 package com.example.makeitso.screens.splash
 
 import androidx.compose.runtime.mutableStateOf
+import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.SPLASH_SCREEN
 import com.example.makeitso.TASKS_SCREEN
 import com.example.makeitso.model.service.AccountService
@@ -43,18 +44,6 @@ class SplashViewModel @Inject constructor(
 
     showError.value = false
     if (accountService.hasUser) openAndPopUp(TASKS_SCREEN, SPLASH_SCREEN)
-    else createAnonymousAccount(openAndPopUp)
-  }
-
-  private fun createAnonymousAccount(openAndPopUp: (String, String) -> Unit) {
-    launchCatching(snackbar = false) {
-      try {
-        accountService.createAnonymousAccount()
-      } catch (ex: FirebaseAuthException) {
-        showError.value = true
-        throw ex
-      }
-      openAndPopUp(TASKS_SCREEN, SPLASH_SCREEN)
-    }
+    else openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
   }
 }

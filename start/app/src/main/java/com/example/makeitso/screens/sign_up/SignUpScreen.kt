@@ -27,6 +27,7 @@ import com.example.makeitso.R.string as AppText
 import com.example.makeitso.common.composable.*
 import com.example.makeitso.common.ext.basicButton
 import com.example.makeitso.common.ext.fieldModifier
+import com.example.makeitso.common.ext.textButton
 
 @Composable
 fun SignUpScreen(
@@ -47,6 +48,10 @@ fun SignUpScreen(
     EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
     PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
     RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, fieldModifier)
+
+    BasicTextButton(AppText.nav_to_sign_in, Modifier.textButton()) {
+      viewModel.onSignInClick(openAndPopUp)
+    }
 
     BasicButton(AppText.create_account, Modifier.basicButton()) {
       viewModel.onSignUpClick(openAndPopUp)
