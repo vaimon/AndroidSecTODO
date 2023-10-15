@@ -30,6 +30,7 @@ import com.example.makeitso.R.string as AppText
 import com.example.makeitso.common.composable.*
 import com.example.makeitso.common.ext.card
 import com.example.makeitso.common.ext.spacer
+import com.example.makeitso.common.ext.toolbarActions
 
 @ExperimentalMaterialApi
 @Composable
@@ -39,30 +40,22 @@ fun SettingsScreen(
   modifier: Modifier = Modifier,
   viewModel: SettingsViewModel = hiltViewModel()
 ) {
-  val uiState by viewModel.uiState.collectAsState(
-    initial = SettingsUiState(false)
-  )
+  val uiState by viewModel.uiState
 
   Column(
     modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    BasicToolbar(AppText.settings)
+    ActionToolbar(
+      title = AppText.settings,
+      modifier = Modifier.toolbarActions(),
+      endActionIcon = if (uiState.isEditingMode) AppIcon.ic_check else AppIcon.ic_edit,
+      endAction = { viewModel.onActionClick() })
 
     Spacer(modifier = Modifier.spacer())
 
-    if (uiState.isAnonymousAccount) {
-      RegularCardEditor(AppText.sign_in, AppIcon.ic_sign_in, "", Modifier.card()) {
-        viewModel.onLoginClick(openScreen)
-      }
-
-      RegularCardEditor(AppText.create_account, AppIcon.ic_create_account, "", Modifier.card()) {
-        viewModel.onSignUpClick(openScreen)
-      }
-    } else {
       SignOutCard { viewModel.onSignOutClick(restartApp) }
       DeleteMyAccountCard { viewModel.onDeleteMyAccountClick(restartApp) }
-    }
   }
 }
 

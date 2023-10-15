@@ -16,6 +16,7 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
+import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.SIGN_UP_SCREEN
 import com.example.makeitso.SPLASH_SCREEN
@@ -29,29 +30,36 @@ import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-  logService: LogService,
-  private val accountService: AccountService,
-  private val storageService: StorageService
+    logService: LogService,
+    private val accountService: AccountService,
+    private val storageService: StorageService
 ) : MakeItSoViewModel(logService) {
-  val uiState = accountService.currentUser.map {
-    SettingsUiState(it.isAnonymous)
-  }
+//  val uiState = accountService.currentUser.map {
+//    SettingsUiState(it.isAnonymous)
+//  }
 
-  fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
+    var uiState = mutableStateOf(SettingsUiState())
+        private set
 
-  fun onSignUpClick(openScreen: (String) -> Unit) = openScreen(SIGN_UP_SCREEN)
+    fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
 
-  fun onSignOutClick(restartApp: (String) -> Unit) {
-    launchCatching {
-      accountService.signOut()
-      restartApp(SPLASH_SCREEN)
+    fun onSignUpClick(openScreen: (String) -> Unit) = openScreen(SIGN_UP_SCREEN)
+
+    fun onSignOutClick(restartApp: (String) -> Unit) {
+        launchCatching {
+            accountService.signOut()
+            restartApp(SPLASH_SCREEN)
+        }
     }
-  }
 
-  fun onDeleteMyAccountClick(restartApp: (String) -> Unit) {
-    launchCatching {
-      accountService.deleteAccount()
-      restartApp(SPLASH_SCREEN)
+    fun onDeleteMyAccountClick(restartApp: (String) -> Unit) {
+        launchCatching {
+            accountService.deleteAccount()
+            restartApp(SPLASH_SCREEN)
+        }
     }
-  }
+
+    fun onActionClick() {
+      uiState.value = uiState.value.copy(isEditingMode = !uiState.value.isEditingMode)
+    }
 }
