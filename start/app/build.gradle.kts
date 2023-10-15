@@ -77,6 +77,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")
     implementation("com.google.dagger:hilt-android:2.47")
+    implementation("androidx.test:runner:1.5.2")
     ksp("com.google.dagger:hilt-compiler:2.47")
 
     //Firebase
@@ -92,7 +93,7 @@ dependencies {
     //Test
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.3")
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.43.2")
     androidTestImplementation("com.google.truth:truth:1.1.3")
     kspAndroidTest("com.google.dagger:hilt-compiler:2.47")

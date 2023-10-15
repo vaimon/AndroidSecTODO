@@ -39,7 +39,9 @@ fun SettingsScreen(
   modifier: Modifier = Modifier,
   viewModel: SettingsViewModel = hiltViewModel()
 ) {
-  val uiState = viewModel.uiState
+  val uiState by viewModel.uiState.collectAsState(
+    initial = SettingsUiState(false)
+  )
 
   Column(
     modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
