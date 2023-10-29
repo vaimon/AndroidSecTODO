@@ -16,10 +16,10 @@ limitations under the License.
 
 package com.example.makeitso.screens.sign_up
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.R.string as AppText
-import com.example.makeitso.SETTINGS_SCREEN
 import com.example.makeitso.SIGN_UP_SCREEN
 import com.example.makeitso.TASKS_SCREEN
 import com.example.makeitso.common.ext.isValidEmail
@@ -44,7 +44,12 @@ class SignUpViewModel @Inject constructor(
     get() = uiState.value.email
   private val password
     get() = uiState.value.password
+  private val name
+    get() = uiState.value.name
 
+  fun onNameChange(newValue: String) {
+    uiState.value = uiState.value.copy(name = newValue)
+  }
   fun onEmailChange(newValue: String) {
     uiState.value = uiState.value.copy(email = newValue)
   }
@@ -74,7 +79,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     launchCatching {
-      accountService.linkAccount(email, password)
+      accountService.registerAccount(email, password, name)
       openAndPopUp(TASKS_SCREEN, SIGN_UP_SCREEN)
     }
   }

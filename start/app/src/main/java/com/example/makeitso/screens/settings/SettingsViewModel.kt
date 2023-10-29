@@ -16,10 +16,12 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.SIGN_UP_SCREEN
 import com.example.makeitso.SPLASH_SCREEN
+import com.example.makeitso.model.User
 import com.example.makeitso.model.service.AccountService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
@@ -40,6 +42,8 @@ class SettingsViewModel @Inject constructor(
 
     var uiState = mutableStateOf(SettingsUiState())
         private set
+
+    val currentUser = accountService.currentUser
 
     fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
 

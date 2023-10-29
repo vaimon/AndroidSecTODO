@@ -18,5 +18,8 @@ package com.example.makeitso.model
 
 data class User(
     val id: String = "",
-    val isAnonymous: Boolean = true
+    val authMethod: String = "",
+    val name: String? = null,
+    val avatarUrl: String? = null,
+    val email: String? = null
 )

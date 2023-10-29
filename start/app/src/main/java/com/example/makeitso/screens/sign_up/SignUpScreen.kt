@@ -41,10 +41,14 @@ fun SignUpScreen(
   BasicToolbar(AppText.create_account)
 
   Column(
-    modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
+    modifier = modifier
+      .fillMaxWidth()
+      .fillMaxHeight()
+      .verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
+    NameField(uiState.name, viewModel::onNameChange, fieldModifier)
     EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
     PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
     RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, fieldModifier)
