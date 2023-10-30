@@ -89,8 +89,11 @@ dependencies {
     implementation("com.google.firebase:firebase-perf-ktx")
     implementation("com.google.firebase:firebase-config-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    implementation("io.coil-kt:coil-compose:1.4.0")
 
     //Test
     testImplementation("junit:junit:4.+")

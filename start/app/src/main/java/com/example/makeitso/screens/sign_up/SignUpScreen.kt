@@ -22,11 +22,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.makeitso.R.string as AppText
 import com.example.makeitso.common.composable.*
 import com.example.makeitso.common.ext.basicButton
 import com.example.makeitso.common.ext.fieldModifier
+import com.example.makeitso.common.ext.spacer
 import com.example.makeitso.common.ext.textButton
 
 @Composable
@@ -48,6 +50,12 @@ fun SignUpScreen(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
+
+    Avatar(source = uiState.avatarUri,
+      Modifier.width(128.0.dp).height(128.0.dp))
+
+    Spacer(modifier = Modifier.spacer())
+
     NameField(uiState.name, viewModel::onNameChange, fieldModifier)
     EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
     PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
@@ -61,4 +69,5 @@ fun SignUpScreen(
       viewModel.onSignUpClick(openAndPopUp)
     }
   }
+
 }

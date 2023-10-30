@@ -16,8 +16,8 @@ limitations under the License.
 
 package com.example.makeitso.screens.sign_up
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.R.string as AppText
 import com.example.makeitso.SIGN_UP_SCREEN
@@ -27,18 +27,27 @@ import com.example.makeitso.common.ext.isValidPassword
 import com.example.makeitso.common.ext.passwordMatches
 import com.example.makeitso.common.snackbar.SnackbarManager
 import com.example.makeitso.model.service.AccountService
+import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.screens.MakeItSoViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
   private val accountService: AccountService,
+  private val fileService: FileService,
   logService: LogService
 ) : MakeItSoViewModel(logService) {
   var uiState = mutableStateOf(SignUpUiState())
     private set
+
+  init {
+    viewModelScope.launch {
+      uiState.value = uiState.value.copy(avatarUri = fileService.getPlaceholderUri())
+    }
+  }
 
   private val email
     get() = uiState.value.email
@@ -46,6 +55,8 @@ class SignUpViewModel @Inject constructor(
     get() = uiState.value.password
   private val name
     get() = uiState.value.name
+  private val avatarUri
+    get() = uiState.value.avatarUri
 
   fun onNameChange(newValue: String) {
     uiState.value = uiState.value.copy(name = newValue)
@@ -79,7 +90,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     launchCatching {
-      accountService.registerAccount(email, password, name)
+      accountService.registerAccount(email, password, name, avatarUri!!)
       openAndPopUp(TASKS_SCREEN, SIGN_UP_SCREEN)
     }
   }

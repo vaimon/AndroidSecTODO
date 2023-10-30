@@ -18,10 +18,12 @@ package com.example.makeitso.model.service.module
 
 import com.example.makeitso.model.service.AccountService
 import com.example.makeitso.model.service.ConfigurationService
+import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
 import com.example.makeitso.model.service.impl.AccountServiceImpl
 import com.example.makeitso.model.service.impl.ConfigurationServiceImpl
+import com.example.makeitso.model.service.impl.FileServiceImpl
 import com.example.makeitso.model.service.impl.LogServiceImpl
 import com.example.makeitso.model.service.impl.StorageServiceImpl
 import dagger.Binds
@@ -40,4 +42,6 @@ abstract class ServiceModule {
 
   @Binds
   abstract fun provideConfigurationService(impl: ConfigurationServiceImpl): ConfigurationService
+  @Binds
+  abstract fun provideFileService(impl: FileServiceImpl): FileService
 }

@@ -16,10 +16,12 @@ limitations under the License.
 
 package com.example.makeitso.model
 
+import android.net.Uri
+
 data class User(
     val id: String = "",
     val authMethod: String = "",
     val name: String? = null,
-    val avatarUrl: String? = null,
+    val avatarUrl: Uri? = null,
     val email: String? = null
 )

@@ -16,6 +16,7 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -87,7 +89,8 @@ fun SettingsScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun ProfileInfo(currentUser: State<User>) {
-    Text(text = currentUser.value.avatarUrl ?: "No avatar")
+    Avatar(source = currentUser.value.avatarUrl,
+        Modifier.width(128.0.dp).height(128.0.dp))
     Text(
         text = currentUser.value.name ?: "No name",
         fontSize = 24.0.sp,

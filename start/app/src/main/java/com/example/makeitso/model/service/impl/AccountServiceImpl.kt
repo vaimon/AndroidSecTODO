@@ -49,7 +49,7 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
                             email = it.email,
                             name = it.displayName,
                             authMethod = it.providerData.drop(1).firstOrNull()?.providerId ?: "Unknown",
-                            avatarUrl = it.photoUrl.toString()
+                            avatarUrl = it.photoUrl
                         )
                     } ?: User()
                     )
@@ -68,9 +68,9 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
         auth.sendPasswordResetEmail(email).await()
     }
 
-    override suspend fun registerAccount(email: String, password: String, name: String): Unit {
+    override suspend fun registerAccount(email: String, password: String, name: String, avatarUri: Uri): Unit {
         auth.createUserWithEmailAndPassword(email, password).await()
-        updateUserProfile(name)
+        updateUserProfile(name, avatarUri)
     }
 
     override suspend fun updateUserProfile(name: String?, profilePicURI: Uri?){
@@ -79,6 +79,7 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
                 name?.let{
                     this.displayName = it
                 }
+                Log.d("Hi",profilePicURI.toString())
                 profilePicURI?.let{
                     this.photoUri = it
                 }

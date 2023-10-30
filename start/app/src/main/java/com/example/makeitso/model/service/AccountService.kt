@@ -28,7 +28,7 @@ interface AccountService {
 
   suspend fun authenticate(email: String, password: String)
   suspend fun sendRecoveryEmail(email: String)
-  suspend fun registerAccount(email: String, password: String, name: String)
+  suspend fun registerAccount(email: String, password: String, name: String, avatarUri: Uri)
   suspend fun deleteAccount()
   suspend fun signOut()
   suspend fun updateUserProfile(name: String? = null, profilePicURI: Uri? = null)

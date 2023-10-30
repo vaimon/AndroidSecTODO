@@ -16,9 +16,13 @@ limitations under the License.
 
 package com.example.makeitso.screens.sign_up
 
+import android.net.Uri
+import com.example.makeitso.R
+
 data class SignUpUiState(
   val name: String = "",
   val email: String = "",
   val password: String = "",
-  val repeatPassword: String = ""
+  val repeatPassword: String = "",
+  val avatarUri: Uri? = null
 )
