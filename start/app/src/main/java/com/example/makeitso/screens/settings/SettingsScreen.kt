@@ -21,12 +21,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.makeitso.R
 import com.example.makeitso.R.drawable as AppIcon
 import com.example.makeitso.R.string as AppText
 import com.example.makeitso.common.composable.*
@@ -62,17 +70,58 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.spacer())
 
-
-        Text(text = currentUser.value.avatarUrl ?: "No avatar")
-        Text(text = currentUser.value.name ?: "No name")
-        Text(text = currentUser.value.authMethod)
-        Text(text = currentUser.value.email ?: "No email")
+        // I'm not sure in this way of props propagation
+        if (!uiState.isEditingMode) {
+            ProfileInfo(currentUser = currentUser)
+        }else{
+            EditableProfileInfo(viewModel)
+        }
 
         Spacer(modifier = Modifier.spacer())
 
         SignOutCard { viewModel.onSignOutClick(restartApp) }
         DeleteMyAccountCard { viewModel.onDeleteMyAccountClick(restartApp) }
     }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun ProfileInfo(currentUser: State<User>) {
+    Text(text = currentUser.value.avatarUrl ?: "No avatar")
+    Text(
+        text = currentUser.value.name ?: "No name",
+        fontSize = 24.0.sp,
+        fontWeight = FontWeight.Bold
+    )
+    Text(
+        text = currentUser.value.email ?: "No email",
+        fontSize = 20.0.sp,
+    )
+    Text(text = stringResource(R.string.auth_type, currentUser.value.authMethod))
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun EditableProfileInfo(viewModel: SettingsViewModel) {
+    InputField(
+        value = viewModel.uiState.value.nameFieldValue,
+        onNewValue = { newValue -> viewModel.updateNameValue(newValue)},
+    )
+    Spacer(modifier = Modifier.spacer())
+    InputField(
+        value = viewModel.uiState.value.emailFieldValue,
+        onNewValue = { newValue -> viewModel.updateEmailValue(newValue)},
+    )
+}
+
+@Composable
+fun InputField(value: String, onNewValue: (String) -> Unit, modifier: Modifier = Modifier) {
+    OutlinedTextField(
+        singleLine = true,
+        modifier = modifier,
+        value = value,
+        onValueChange = { onNewValue(it) },
+    )
 }
 
 @ExperimentalMaterialApi

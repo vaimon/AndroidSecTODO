@@ -32,4 +32,5 @@ interface AccountService {
   suspend fun deleteAccount()
   suspend fun signOut()
   suspend fun updateUserProfile(name: String? = null, profilePicURI: Uri? = null)
+  suspend fun updateUserEmail(email: String)
 }

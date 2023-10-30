@@ -16,19 +16,23 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
+import com.example.makeitso.R
 import com.example.makeitso.SIGN_UP_SCREEN
 import com.example.makeitso.SPLASH_SCREEN
-import com.example.makeitso.model.User
+import com.example.makeitso.common.ext.isValidEmail
+import com.example.makeitso.common.snackbar.SnackbarManager
 import com.example.makeitso.model.service.AccountService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
 import com.example.makeitso.screens.MakeItSoViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.lastOrNull
 import javax.inject.Inject
-import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -43,11 +47,7 @@ class SettingsViewModel @Inject constructor(
     var uiState = mutableStateOf(SettingsUiState())
         private set
 
-    val currentUser = accountService.currentUser
-
-    fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
-
-    fun onSignUpClick(openScreen: (String) -> Unit) = openScreen(SIGN_UP_SCREEN)
+    var currentUser = accountService.currentUser
 
     fun onSignOutClick(restartApp: (String) -> Unit) {
         launchCatching {
@@ -64,6 +64,40 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun onActionClick() {
-      uiState.value = uiState.value.copy(isEditingMode = !uiState.value.isEditingMode)
+        if (uiState.value.isEditingMode) {
+            val email = uiState.value.emailFieldValue
+            val name = uiState.value.nameFieldValue
+
+            if (!email.isValidEmail()) {
+                SnackbarManager.showMessage(R.string.email_error)
+                return
+            }
+            launchCatching {
+                accountService.updateUserEmail(email)
+            }
+
+            launchCatching {
+                accountService.updateUserProfile(name = name)
+            }
+        }
+        currentUser = accountService.currentUser
+        launchCatching {
+            currentUser.collect{
+                uiState.value = SettingsUiState(
+                    nameFieldValue = it.name ?: "No name",
+                    emailFieldValue = it.email ?: "",
+                    isEditingMode = !uiState.value.isEditingMode
+                )
+            }
+        }
+
+    }
+
+    fun updateNameValue(newValue: String) {
+        uiState.value = uiState.value.copy(nameFieldValue = newValue)
+    }
+
+    fun updateEmailValue(newValue: String) {
+        uiState.value = uiState.value.copy(emailFieldValue = newValue)
     }
 }

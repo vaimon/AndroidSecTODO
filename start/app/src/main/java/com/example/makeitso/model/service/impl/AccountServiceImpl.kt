@@ -20,17 +20,16 @@ import android.net.Uri
 import android.util.Log
 import com.example.makeitso.model.User
 import com.example.makeitso.model.service.AccountService
-import com.example.makeitso.model.service.trace
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import kotlinx.coroutines.awaitAll
 import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.net.URI
 
 class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : AccountService {
 
@@ -49,14 +48,16 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
                             id = it.uid,
                             email = it.email,
                             name = it.displayName,
-                            authMethod = it.providerData.joinToString(", ") { it.providerId },
+                            authMethod = it.providerData.drop(1).firstOrNull()?.providerId ?: "Unknown",
                             avatarUrl = it.photoUrl.toString()
                         )
                     } ?: User()
                     )
                 }
             auth.addAuthStateListener(listener)
-            awaitClose { auth.removeAuthStateListener(listener) }
+            awaitClose {
+                auth.removeAuthStateListener(listener)
+            }
         }
 
     override suspend fun authenticate(email: String, password: String) {
@@ -83,6 +84,10 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
                 }
             }.build()
         ).await()
+    }
+
+    override suspend fun updateUserEmail(email: String) {
+        auth.currentUser!!.updateEmail(email).await()
     }
 
     override suspend fun deleteAccount() {

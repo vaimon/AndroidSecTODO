@@ -16,4 +16,8 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
-data class SettingsUiState(val isEditingMode: Boolean = false)
+data class SettingsUiState(
+    val isEditingMode: Boolean = false,
+    val nameFieldValue: String = "",
+    val emailFieldValue: String = ""
+    )
