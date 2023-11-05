@@ -16,6 +16,7 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
+import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
@@ -25,6 +26,7 @@ import com.example.makeitso.SPLASH_SCREEN
 import com.example.makeitso.common.ext.isValidEmail
 import com.example.makeitso.common.snackbar.SnackbarManager
 import com.example.makeitso.model.service.AccountService
+import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
 import com.example.makeitso.screens.MakeItSoViewModel
@@ -38,7 +40,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     logService: LogService,
     private val accountService: AccountService,
-    private val storageService: StorageService
+    private val storageService: StorageService,
+    private val fileService: FileService,
 ) : MakeItSoViewModel(logService) {
 //  val uiState = accountService.currentUser.map {
 //    SettingsUiState(it.isAnonymous)
@@ -91,6 +94,15 @@ class SettingsViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun onNewImageChosen(imgUri: Uri?){
+        launchCatching {
+            if(imgUri == null)
+                return@launchCatching
+            val storageImageUri = fileService.uploadImage(imgUri)
+            accountService.updateUserProfile(profilePicURI = storageImageUri)
+        }
     }
 
     fun updateNameValue(newValue: String) {

@@ -24,4 +24,6 @@ data class User(
     val name: String? = null,
     val avatarUrl: Uri? = null,
     val email: String? = null
-)
+){
+    fun isAuthenticatedWithProvider() = authMethod != "password"
+}

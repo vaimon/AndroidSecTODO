@@ -21,6 +21,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -77,7 +79,7 @@ fun SettingsScreen(
         if (!uiState.isEditingMode) {
             ProfileInfo(currentUser = currentUser)
         }else{
-            EditableProfileInfo(viewModel)
+            EditableProfileInfo(currentUser = currentUser, viewModel)
         }
 
         Spacer(modifier = Modifier.spacer())
@@ -90,9 +92,13 @@ fun SettingsScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun ProfileInfo(currentUser: State<User>) {
-    Log.d("Hi", currentUser.value.avatarUrl.toString())
     Avatar(source = currentUser.value.avatarUrl,
-        Modifier.width(128.0.dp).height(128.0.dp))
+        Modifier
+            .width(128.0.dp)
+            .height(128.0.dp)
+            .clip(CircleShape)
+    )
+    Spacer(modifier = Modifier.spacer())
     Text(
         text = currentUser.value.name ?: "No name",
         fontSize = 24.0.sp,
@@ -107,16 +113,27 @@ private fun ProfileInfo(currentUser: State<User>) {
 
 @ExperimentalMaterialApi
 @Composable
-private fun EditableProfileInfo(viewModel: SettingsViewModel) {
+private fun EditableProfileInfo(currentUser: State<User>, viewModel: SettingsViewModel) {
+    EditableAvatar(source = currentUser.value.avatarUrl,
+        Modifier
+            .width(128.0.dp)
+            .height(128.0.dp)
+            .clip(CircleShape)
+    ){
+        viewModel.onNewImageChosen(it)
+    }
+    Spacer(modifier = Modifier.spacer())
     InputField(
         value = viewModel.uiState.value.nameFieldValue,
         onNewValue = { newValue -> viewModel.updateNameValue(newValue)},
     )
     Spacer(modifier = Modifier.spacer())
-    InputField(
-        value = viewModel.uiState.value.emailFieldValue,
-        onNewValue = { newValue -> viewModel.updateEmailValue(newValue)},
-    )
+    if(!currentUser.value.isAuthenticatedWithProvider()){
+        InputField(
+            value = viewModel.uiState.value.emailFieldValue,
+            onNewValue = { newValue -> viewModel.updateEmailValue(newValue)},
+        )
+    }
 }
 
 @Composable

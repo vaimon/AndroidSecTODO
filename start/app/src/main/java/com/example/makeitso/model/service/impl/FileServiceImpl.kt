@@ -12,12 +12,13 @@ class FileServiceImpl @Inject
 constructor(private val storage: FirebaseStorage, private val auth: AccountService) :
     FileService {
 
-    fun uploadPicture(){
-
+    override suspend fun uploadImage(localUri: Uri): Uri {
+        val ref = storage.getReference("/avatars/${auth.currentUserId}/${localUri.lastPathSegment}")
+        ref.putFile(localUri).await()
+        return ref.downloadUrl.await()
     }
 
     override suspend fun getPlaceholderUri(): Uri{
-        Log.d("Hi", storage.getReference("placeholder.jpg").downloadUrl.await().toString())
         return storage.getReference("placeholder.jpg").downloadUrl.await()
     }
 }
