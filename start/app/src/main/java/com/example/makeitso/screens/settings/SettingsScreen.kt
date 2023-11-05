@@ -58,7 +58,7 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState
 
-    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle(initialValue = User())
+    val currentUser by viewModel.currentUser
 
     Column(
         modifier = modifier

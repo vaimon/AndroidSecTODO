@@ -17,17 +17,23 @@ limitations under the License.
 package com.example.makeitso.screens.settings
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.example.makeitso.R
 import com.example.makeitso.SPLASH_SCREEN
 import com.example.makeitso.common.ext.isValidEmail
 import com.example.makeitso.common.snackbar.SnackbarManager
+import com.example.makeitso.model.User
 import com.example.makeitso.model.service.AccountService
 import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
 import com.example.makeitso.screens.MakeItSoViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,14 +43,20 @@ class SettingsViewModel @Inject constructor(
     private val storageService: StorageService,
     private val fileService: FileService,
 ) : MakeItSoViewModel(logService) {
-//  val uiState = accountService.currentUser.map {
-//    SettingsUiState(it.isAnonymous)
-//  }
 
     var uiState = mutableStateOf(SettingsUiState())
         private set
 
-    val currentUser = accountService.currentUser
+    private val currentUserFlow = accountService.currentUser
+    val currentUser: MutableState<User> = mutableStateOf(User())
+
+    init {
+        viewModelScope.launch {
+            currentUserFlow.collect{
+                currentUser.value = it
+            }
+        }
+    }
 
     fun onSignOutClick(restartApp: (String) -> Unit) {
         launchCatching {
@@ -61,7 +73,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun onActionClick(shouldUpdateEmail: Boolean) {
-
+        val pendingUpdates: MutableList<Job> = mutableListOf()
         if (uiState.value.isEditingMode) {
             if (shouldUpdateEmail){
                 val email = uiState.value.emailFieldValue
@@ -71,16 +83,22 @@ class SettingsViewModel @Inject constructor(
                 }
                 launchCatching {
                     accountService.updateUserEmail(email)
+                }.also {
+                    pendingUpdates.add(it)
                 }
             }
 
             val name = uiState.value.nameFieldValue
             launchCatching {
                 accountService.updateUserProfile(name = name)
+            }.also {
+                pendingUpdates.add(it)
             }
         }
         launchCatching {
-            currentUser.collect{
+            pendingUpdates.forEach { it.join() }
+            currentUserFlow.collect{
+                currentUser.value = it
                 uiState.value = SettingsUiState(
                     nameFieldValue = it.name ?: "No name",
                     emailFieldValue = it.email ?: "",
@@ -97,6 +115,9 @@ class SettingsViewModel @Inject constructor(
                 return@launchCatching
             val storageImageUri = fileService.uploadImage(imgUri)
             accountService.updateUserProfile(avatarUri = storageImageUri)
+            currentUserFlow.collect{
+                currentUser.value = it
+            }
         }
     }
 

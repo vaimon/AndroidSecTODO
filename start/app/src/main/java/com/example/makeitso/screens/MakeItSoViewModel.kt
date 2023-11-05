@@ -23,6 +23,7 @@ import com.example.makeitso.common.snackbar.SnackbarMessage.Companion.toSnackbar
 import com.example.makeitso.model.service.LogService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 open class MakeItSoViewModel(private val logService: LogService) : ViewModel() {
