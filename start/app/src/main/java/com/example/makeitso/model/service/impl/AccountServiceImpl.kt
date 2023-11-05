@@ -17,16 +17,12 @@ limitations under the License.
 package com.example.makeitso.model.service.impl
 
 import android.net.Uri
-import android.util.Log
 import com.example.makeitso.model.User
 import com.example.makeitso.model.service.AccountService
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -73,20 +69,17 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
     override suspend fun registerAccount(
         email: String,
         password: String,
-        name: String,
-        avatarUri: Uri
-    ): Unit {
+    ) {
         auth.createUserWithEmailAndPassword(email, password).await()
-        updateUserProfile(name, avatarUri)
     }
 
-    override suspend fun updateUserProfile(name: String?, profilePicURI: Uri?) {
+    override suspend fun updateUserProfile(name: String?, avatarUri: Uri?) {
         auth.currentUser!!.updateProfile(
             UserProfileChangeRequest.Builder().apply {
                 name?.let {
                     this.displayName = it
                 }
-                profilePicURI?.let {
+                avatarUri?.let {
                     this.photoUri = it
                 }
             }.build()
@@ -101,7 +94,7 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
         val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
         auth.signInWithCredential(credential).await()
         if (auth.currentUser?.displayName == null) {
-            updateUserProfile(name = account.displayName, profilePicURI = account.photoUrl)
+            updateUserProfile(name = account.displayName, avatarUri = account.photoUrl)
         }
     }
 

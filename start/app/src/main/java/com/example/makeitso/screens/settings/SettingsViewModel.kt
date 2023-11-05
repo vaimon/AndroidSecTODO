@@ -17,12 +17,8 @@ limitations under the License.
 package com.example.makeitso.screens.settings
 
 import android.net.Uri
-import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.R
-import com.example.makeitso.SIGN_UP_SCREEN
 import com.example.makeitso.SPLASH_SCREEN
 import com.example.makeitso.common.ext.isValidEmail
 import com.example.makeitso.common.snackbar.SnackbarManager
@@ -31,11 +27,7 @@ import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
 import com.example.makeitso.screens.MakeItSoViewModel
-import com.google.protobuf.BoolValueOrBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.lastOrNull
 import javax.inject.Inject
 
 @HiltViewModel
@@ -104,7 +96,7 @@ class SettingsViewModel @Inject constructor(
             if(imgUri == null)
                 return@launchCatching
             val storageImageUri = fileService.uploadImage(imgUri)
-            accountService.updateUserProfile(profilePicURI = storageImageUri)
+            accountService.updateUserProfile(avatarUri = storageImageUri)
         }
     }
 

@@ -18,10 +18,12 @@ package com.example.makeitso.screens.sign_up
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.makeitso.R.string as AppText
@@ -51,8 +53,13 @@ fun SignUpScreen(
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
 
-    Avatar(source = uiState.avatarUri,
-      Modifier.width(128.0.dp).height(128.0.dp))
+    EditableAvatar(source = uiState.localAvatarUri,
+      Modifier
+        .width(128.0.dp)
+        .height(128.0.dp)
+        .clip(CircleShape)){
+      viewModel.onAvatarChange(it)
+    }
 
     Spacer(modifier = Modifier.spacer())
 

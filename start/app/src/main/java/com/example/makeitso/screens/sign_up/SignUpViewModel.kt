@@ -16,8 +16,8 @@ limitations under the License.
 
 package com.example.makeitso.screens.sign_up
 
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.R.string as AppText
 import com.example.makeitso.SIGN_UP_SCREEN
@@ -31,7 +31,6 @@ import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.screens.MakeItSoViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,20 +42,14 @@ class SignUpViewModel @Inject constructor(
   var uiState = mutableStateOf(SignUpUiState())
     private set
 
-  init {
-    viewModelScope.launch {
-      uiState.value = uiState.value.copy(avatarUri = fileService.getPlaceholderUri())
-    }
-  }
-
   private val email
     get() = uiState.value.email
   private val password
     get() = uiState.value.password
   private val name
     get() = uiState.value.name
-  private val avatarUri
-    get() = uiState.value.avatarUri
+  private val localAvatarUri
+    get() = uiState.value.localAvatarUri
 
   fun onNameChange(newValue: String) {
     uiState.value = uiState.value.copy(name = newValue)
@@ -90,7 +83,11 @@ class SignUpViewModel @Inject constructor(
     }
 
     launchCatching {
-      accountService.registerAccount(email, password, name, avatarUri!!)
+      accountService.registerAccount(email, password)
+      val avatarUri = localAvatarUri?.let{
+        fileService.uploadImage(it)
+      }
+      accountService.updateUserProfile(name, avatarUri)
       openAndPopUp(TASKS_SCREEN, SIGN_UP_SCREEN)
     }
   }
@@ -98,4 +95,8 @@ class SignUpViewModel @Inject constructor(
   fun onSignInClick(openAndPopUp: (String, String) -> Unit){
     openAndPopUp(LOGIN_SCREEN, SIGN_UP_SCREEN)
   }
+
+    fun onAvatarChange(pictureUri: Uri?) {
+      uiState.value = uiState.value.copy(localAvatarUri = pictureUri)
+    }
 }
