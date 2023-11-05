@@ -70,18 +70,23 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
         auth.sendPasswordResetEmail(email).await()
     }
 
-    override suspend fun registerAccount(email: String, password: String, name: String, avatarUri: Uri): Unit {
+    override suspend fun registerAccount(
+        email: String,
+        password: String,
+        name: String,
+        avatarUri: Uri
+    ): Unit {
         auth.createUserWithEmailAndPassword(email, password).await()
         updateUserProfile(name, avatarUri)
     }
 
-    override suspend fun updateUserProfile(name: String?, profilePicURI: Uri?){
+    override suspend fun updateUserProfile(name: String?, profilePicURI: Uri?) {
         auth.currentUser!!.updateProfile(
             UserProfileChangeRequest.Builder().apply {
-                name?.let{
+                name?.let {
                     this.displayName = it
                 }
-                profilePicURI?.let{
+                profilePicURI?.let {
                     this.photoUri = it
                 }
             }.build()
@@ -95,7 +100,7 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
     override suspend fun signInWithGoogle(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
         auth.signInWithCredential(credential).await()
-        if (auth.currentUser?.displayName == null){
+        if (auth.currentUser?.displayName == null) {
             updateUserProfile(name = account.displayName, profilePicURI = account.photoUrl)
         }
     }
@@ -113,6 +118,7 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
 
     companion object {
         private const val LINK_ACCOUNT_TRACE = "linkAccount"
-        const val WEB_CLIENT_ID = "525981251418-m9bn2bebnm2hiuloddi3hl0f0b652m0o.apps.googleusercontent.com"
+        const val WEB_CLIENT_ID =
+            "525981251418-m9bn2bebnm2hiuloddi3hl0f0b652m0o.apps.googleusercontent.com"
     }
 }

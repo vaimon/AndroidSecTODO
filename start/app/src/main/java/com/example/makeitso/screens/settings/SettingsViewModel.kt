@@ -17,6 +17,7 @@ limitations under the License.
 package com.example.makeitso.screens.settings
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
@@ -30,6 +31,7 @@ import com.example.makeitso.model.service.FileService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
 import com.example.makeitso.screens.MakeItSoViewModel
+import com.google.protobuf.BoolValueOrBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -50,7 +52,7 @@ class SettingsViewModel @Inject constructor(
     var uiState = mutableStateOf(SettingsUiState())
         private set
 
-    var currentUser = accountService.currentUser
+    val currentUser = accountService.currentUser
 
     fun onSignOutClick(restartApp: (String) -> Unit) {
         launchCatching {
@@ -66,24 +68,25 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onActionClick() {
+    fun onActionClick(shouldUpdateEmail: Boolean) {
+
         if (uiState.value.isEditingMode) {
-            val email = uiState.value.emailFieldValue
+            if (shouldUpdateEmail){
+                val email = uiState.value.emailFieldValue
+                if (!email.isValidEmail()) {
+                    SnackbarManager.showMessage(R.string.email_error)
+                    return
+                }
+                launchCatching {
+                    accountService.updateUserEmail(email)
+                }
+            }
+
             val name = uiState.value.nameFieldValue
-
-            if (!email.isValidEmail()) {
-                SnackbarManager.showMessage(R.string.email_error)
-                return
-            }
-            launchCatching {
-                accountService.updateUserEmail(email)
-            }
-
             launchCatching {
                 accountService.updateUserProfile(name = name)
             }
         }
-        currentUser = accountService.currentUser
         launchCatching {
             currentUser.collect{
                 uiState.value = SettingsUiState(

@@ -58,7 +58,7 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState
 
-    val currentUser = viewModel.currentUser.collectAsStateWithLifecycle(initialValue = User())
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle(initialValue = User())
 
     Column(
         modifier = modifier
@@ -71,7 +71,7 @@ fun SettingsScreen(
             title = AppText.settings,
             modifier = Modifier.toolbarActions(),
             endActionIcon = if (uiState.isEditingMode) AppIcon.ic_check else AppIcon.ic_edit,
-            endAction = { viewModel.onActionClick() })
+            endAction = { viewModel.onActionClick(!currentUser.isAuthenticatedWithProvider()) })
 
         Spacer(modifier = Modifier.spacer())
 
@@ -91,8 +91,8 @@ fun SettingsScreen(
 
 @ExperimentalMaterialApi
 @Composable
-private fun ProfileInfo(currentUser: State<User>) {
-    Avatar(source = currentUser.value.avatarUrl,
+private fun ProfileInfo(currentUser: User) {
+    Avatar(source = currentUser.avatarUrl,
         Modifier
             .width(128.0.dp)
             .height(128.0.dp)
@@ -100,21 +100,21 @@ private fun ProfileInfo(currentUser: State<User>) {
     )
     Spacer(modifier = Modifier.spacer())
     Text(
-        text = currentUser.value.name ?: "No name",
+        text = currentUser.name ?: "No name",
         fontSize = 24.0.sp,
         fontWeight = FontWeight.Bold
     )
     Text(
-        text = currentUser.value.email ?: "No email",
+        text = currentUser.email ?: "No email",
         fontSize = 20.0.sp,
     )
-    Text(text = stringResource(R.string.auth_type, currentUser.value.authMethod))
+    Text(text = stringResource(R.string.auth_type, currentUser.authMethod))
 }
 
 @ExperimentalMaterialApi
 @Composable
-private fun EditableProfileInfo(currentUser: State<User>, viewModel: SettingsViewModel) {
-    EditableAvatar(source = currentUser.value.avatarUrl,
+private fun EditableProfileInfo(currentUser: User, viewModel: SettingsViewModel) {
+    EditableAvatar(source = currentUser.avatarUrl,
         Modifier
             .width(128.0.dp)
             .height(128.0.dp)
@@ -128,7 +128,7 @@ private fun EditableProfileInfo(currentUser: State<User>, viewModel: SettingsVie
         onNewValue = { newValue -> viewModel.updateNameValue(newValue)},
     )
     Spacer(modifier = Modifier.spacer())
-    if(!currentUser.value.isAuthenticatedWithProvider()){
+    if(!currentUser.isAuthenticatedWithProvider()){
         InputField(
             value = viewModel.uiState.value.emailFieldValue,
             onNewValue = { newValue -> viewModel.updateEmailValue(newValue)},
