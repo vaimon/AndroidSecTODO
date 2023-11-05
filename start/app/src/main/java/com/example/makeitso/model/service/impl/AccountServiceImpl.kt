@@ -20,15 +20,17 @@ import android.net.Uri
 import android.util.Log
 import com.example.makeitso.model.User
 import com.example.makeitso.model.service.AccountService
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : AccountService {
@@ -79,7 +81,6 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
                 name?.let{
                     this.displayName = it
                 }
-                Log.d("Hi",profilePicURI.toString())
                 profilePicURI?.let{
                     this.photoUri = it
                 }
@@ -89,6 +90,20 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
 
     override suspend fun updateUserEmail(email: String) {
         auth.currentUser!!.updateEmail(email).await()
+    }
+
+    override suspend fun signInWithGoogle(account: GoogleSignInAccount) {
+//        val signInRequest = BeginSignInRequest.builder()
+//            .setGoogleIdTokenRequestOptions(
+//                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+//                    .setSupported(true)
+//                    .setServerClientId(WEB_CLIENT_ID)
+//                    .setFilterByAuthorizedAccounts(true)
+//                    .build())
+//            .build()
+        val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+        auth.signInWithCredential(credential).await()
+        updateUserProfile(name = account.displayName, profilePicURI = account.photoUrl)
     }
 
     override suspend fun deleteAccount() {
@@ -104,5 +119,6 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
 
     companion object {
         private const val LINK_ACCOUNT_TRACE = "linkAccount"
+        const val WEB_CLIENT_ID = "525981251418-m9bn2bebnm2hiuloddi3hl0f0b652m0o.apps.googleusercontent.com"
     }
 }

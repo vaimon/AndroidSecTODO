@@ -18,6 +18,7 @@ package com.example.makeitso.model.service
 
 import android.net.Uri
 import com.example.makeitso.model.User
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import kotlinx.coroutines.flow.Flow
 
 interface AccountService {
@@ -33,4 +34,5 @@ interface AccountService {
   suspend fun signOut()
   suspend fun updateUserProfile(name: String? = null, profilePicURI: Uri? = null)
   suspend fun updateUserEmail(email: String)
+  suspend fun signInWithGoogle(account: GoogleSignInAccount);
 }
