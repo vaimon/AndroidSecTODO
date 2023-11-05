@@ -93,17 +93,11 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
     }
 
     override suspend fun signInWithGoogle(account: GoogleSignInAccount) {
-//        val signInRequest = BeginSignInRequest.builder()
-//            .setGoogleIdTokenRequestOptions(
-//                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-//                    .setSupported(true)
-//                    .setServerClientId(WEB_CLIENT_ID)
-//                    .setFilterByAuthorizedAccounts(true)
-//                    .build())
-//            .build()
         val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
         auth.signInWithCredential(credential).await()
-        updateUserProfile(name = account.displayName, profilePicURI = account.photoUrl)
+        if (auth.currentUser?.displayName == null){
+            updateUserProfile(name = account.displayName, profilePicURI = account.photoUrl)
+        }
     }
 
     override suspend fun deleteAccount() {
